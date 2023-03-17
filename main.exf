@@ -1,0 +1,25 @@
+include "system";
+include "type";
+include "array";
+function sizeof(obj){
+    return type.sizeof(obj);
+}
+value local memory:"M" = system.memory();
+value local add:"累加器" = 0;
+value local buf:"累加器" = 0;
+value local arrays:"数组" = ["你好！ 世界！",23,false,null,3.1415926];
+value local array_3:"嵌套数组" = [add,33,arrays];
+if(memory < 2){
+    system.print(">2MB Memory");
+}else{
+    while(add < 10){
+        add = add + 1;
+        buf = add + buf;
+        system.print(buf);
+    }
+    if(main.sizeof(array_3) == "3 BIT"){
+        system.print("猜中了");
+    }else{
+        system.print(arrays);
+    }
+}

@@ -1,0 +1,5 @@
+include "system";
+
+function pay_money(money){
+  system.print("成功给月月打入("+money+")元钱");
+}
