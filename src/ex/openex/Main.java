@@ -3,7 +3,7 @@ package ex.openex;
 import java.util.HashSet;
 
 public class Main {
-    public static final String compile_version = "OpenEX_ScriptCompile_AbstractSyntaxTree_v0.1.2";
+    public static final String compile_version = "OpenEX_ScriptCompile_AbstractSyntaxTree_v0.1.3";
     public static final String runtime_version = "OpenEX_ScriptRuntime_AbstractSyntaxTree_v0.1.0";
     static ScriptOutputStream output = new ScriptOutputStream();
     static HashSet<String> s = new HashSet<>();
