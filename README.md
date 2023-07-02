@@ -14,11 +14,11 @@
 >> 编译器OpenEX_ScriptCompile_AbstractSyntaxTree_v(版本号)
 
 * 新版指令参数:
-> -filename:文件名 '添加一个脚本文件'
+> -filename 文件名 '添加一个脚本文件'
 * 新版语法升级:
 ```js
-value local name:"增加了函数+算式的初始值" = exe.system.memory()+1;
-value local arrays:"将OpenEXJE的list列表改为数组" = ["H",123,true,null,name];
+value name:"增加了函数+算式的初始值" = exe.system.memory()+1;
+value arrays:"将OpenEXJE的list列表改为数组" = ["H",123,true,null,name];
 
 //新版函数调用
 system.print(exe.system.memory()*2,3*(23+4));
@@ -37,15 +37,7 @@ return 值;
 ## OpenEX内部更改
 
 ### 编译器
-* 修改了Parser语法解析器架构,将OpenEXJE的BasicParser拆成很多小Parser对单一语句进行解析
-* 修改了算式解析器的架构,方便处理函数参数,变量参数初始值的新版语法
-* 删除了原先字节码的概念，由解释器直接执行语法树
-* 编译器整体被归到<code>ex.openex.compile</code>包下
-
-### 解释器
-* Executor架构更新,直接执行语法树
-* Lib加载器架构重写
-* 解释器整体被归到<code>ex.openex.astvm</code>包下
+* 包格式更新,由<code>ex.openex.compile</code>更改为<code>io.openex.compile<code>
 
 <hr>
 
@@ -53,3 +45,12 @@ return 值;
 
 * v0.1.0-将原OpenEXJE代码移植,并更新项目
 * v0.1.2-修复若干解析BUG，并增加了type array string库
+* v0.1.3-优化了部分代码
+* v0.1.4-加入了Statement语句分割机制
+* v0.1.5-优化了一些表达式分割机制
+* v0.1.5-因语句分割BUG过多，裁掉并采用原语法语义解析方法,并将该机制移到Plus版本
+* v0.1.6-优化了数组值获取
+* v0.1.7-废除<code>global local</code>作用域,变量默认为<code>local</code>
+* v0.1.8-彻底废除语法中的<code>global local</code>,但将其作为保留字处理
+* v0.1.9-优化了表达式处理,沿用了Plus版算术与逻辑混合的表达式架构
+* v0.2.0-更改大部分语法,优化了编译器以及解释器的执行效率
