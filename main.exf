@@ -1,5 +1,5 @@
 include "system";
 
-value mem : "Debug" = !(2==2);
+value mem : "Debug" = [12,!(2==2)];
 
-system.print(mem);
+system.print(mem[1]);
