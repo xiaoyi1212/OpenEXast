@@ -23,7 +23,7 @@ public class Array implements RuntimeLibrary{
     }
 
     @Override
-    public java.lang.String getName() {
+    public String getName() {
         return "array";
     }
 
@@ -45,7 +45,7 @@ public class Array implements RuntimeLibrary{
             return a.getObj(i,executor);
         }
         @Override
-        public java.lang.String getName() {
+        public String getName() {
             return "get_object";
         }
     }
@@ -69,7 +69,7 @@ public class Array implements RuntimeLibrary{
             return new ExNull();
         }
         @Override
-        public java.lang.String getName() {
+        public String getName() {
             return "set_object";
         }
     }
@@ -86,7 +86,7 @@ public class Array implements RuntimeLibrary{
             return new ExInt(a.length());
         }
         @Override
-        public java.lang.String getName() {
+        public String getName() {
             return "length";
         }
     }

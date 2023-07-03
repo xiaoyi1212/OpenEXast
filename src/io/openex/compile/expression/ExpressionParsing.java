@@ -2,6 +2,8 @@ package io.openex.compile.expression;
 
 import io.openex.astvm.code.ByteCode;
 import io.openex.astvm.code.opcode.*;
+import io.openex.astvm.code.struct.GroupByteCode;
+import io.openex.astvm.code.struct.InvokeByteCode;
 import io.openex.astvm.obj.*;
 import io.openex.compile.Compiler;
 import io.openex.compile.LexicalAnalysis;
@@ -17,6 +19,7 @@ public class ExpressionParsing {
     ArrayList<LexicalAnalysis.Token> tds;
     Parser parser;
     Compiler compiler;
+    LexicalAnalysis.Token buffer = null;
     int index;
 
     public ExpressionParsing(ArrayList<LexicalAnalysis.Token> tds,Parser parser,Compiler compiler){
@@ -27,10 +30,15 @@ public class ExpressionParsing {
     }
 
     private LexicalAnalysis.Token getToken(ArrayList<LexicalAnalysis.Token> tokens){
-
-        if(index >= tokens.size())return null;
-        LexicalAnalysis.Token t = tokens.get(index);
-        index += 1;
+        LexicalAnalysis.Token t;
+        if(buffer==null) {
+            if (index >= tokens.size()) return null;
+            t = tokens.get(index);
+            index += 1;
+        }else {
+            t = buffer;
+            buffer = null;
+        }
         return t;
     }
 
@@ -60,7 +68,34 @@ public class ExpressionParsing {
                     if (token.getData().equals("true") || token.getData().equals("false")) suffixList.add(token);
                     else throw new CompileException("Illegal keywords.",token, parser.getFilename());
                 } else if (token.getType() == LexicalAnalysis.NAME) {
-                    if (compiler.getValueNames().contains(token.getData())) suffixList.add(token);
+                    if (compiler.getValueNames().contains(token.getData())){
+                        String name = token.getData();
+                        token = getToken(tds);
+
+                        if(token.getType()==LexicalAnalysis.LP&&token.getData().equals("[")){
+                            int ibl = 1;
+                            ArrayList<LexicalAnalysis.Token> ts = new ArrayList<>();
+                            ArrayList<ByteCode> bcs = new ArrayList<>(),var = new ArrayList<>();
+                            do{
+                                token = getToken(tds);
+                                if(token.getType()==LexicalAnalysis.LP&&token.getData().equals("[")) ibl += 1;
+                                if(token.getType()==LexicalAnalysis.LR&&token.getData().equals("]")) ibl -= 1;
+                                if(ibl <= 0)break;
+                                ts.add(token);
+                            }while (true);
+                            ExpressionParsing ep = new ExpressionParsing(ts,parser,compiler);
+
+                            var.add(new PushCode(new ExVarName(name)));
+                            var.add(new GroupByteCode(ep.calculate(ep.transitSuffix())));
+
+                            bcs.add(new InvokeByteCode("array","get_object",var));
+
+                            suffixList.add(new TokenX(new GroupByteCode(bcs)));
+                            continue;
+                        }else buffer = token;
+
+                        suffixList.add(token);
+                    }
                     else throw new CompileException( "Not found value.",token, parser.getFilename());
                 } else if ("(".equals(token.getData()) && token.getType() == LexicalAnalysis.LP) {
                     op_stack.push(token);
@@ -73,7 +108,7 @@ public class ExpressionParsing {
                             suffixList.add(op_stack.pop());
                         }
                     }
-                } else throw new CompileException("Unable to resolve symbols",token, parser.getFilename() );
+                } else throw new CompileException("Unable to resolve symbols.",token, parser.getFilename() );
             }catch (NullPointerException e){
                 break;
             }
@@ -147,10 +182,8 @@ public class ExpressionParsing {
                         if(td.getType()==LexicalAnalysis.LR&&td.getData().equals(")")) exe_index-= 1;
                     }while (exe_index > 0);
                     bbc.add(new InvokeParser(v_tds).eval(parser,compiler));
-                    continue;
                 }else{
-                    ExVarName valuea = null;
-                    valuea = new ExVarName(td.getData());
+                    ExVarName valuea = new ExVarName(td.getData());
 
                     bbc.add(new PushCode(valuea));
                 }
@@ -177,6 +210,7 @@ public class ExpressionParsing {
                     case "|" -> bbc.add(new OrCode());
                 }
             } else if (td.getType()==LexicalAnalysis.STRING) bbc.add(new PushCode(new ExString(td.getData())));
+            else if(td.getType() == LexicalAnalysis.EXP) bbc.add(((TokenX)td).getBc());
         }
         return bbc;
     }

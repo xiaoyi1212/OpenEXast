@@ -20,7 +20,8 @@ public class LexicalAnalysis {
             LP = 7,
             LR = 8,
             LINE = 9,
-            END = 10;
+            END = 10,
+            EXP = 11;
 
     public LexicalAnalysis(ArrayList<String> data, String file_name) {
         StringBuilder sb = new StringBuilder();
@@ -226,6 +227,8 @@ public class LexicalAnalysis {
         int type;
         String data;
         int line;
+
+        public Token(){}
 
         public Token(int type, String data, int line) {
             this.type = type;
