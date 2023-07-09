@@ -2,6 +2,7 @@ package io.openex.util;
 
 import io.openex.Main;
 import io.openex.compile.LexicalAnalysis;
+import io.openex.compile.Token;
 
 public class CompileException extends RuntimeException{
     public CompileException(String message,String filename){
@@ -10,7 +11,7 @@ public class CompileException extends RuntimeException{
                 "FileLine:unknown\n\t" +
                 "Code:unknown");
     }
-    public CompileException(String message, LexicalAnalysis.Token token,String filename){
+    public CompileException(String message, Token token, String filename){
         Main.getOutput().error("CompileError:"+message+"\n\t" +
                 "Filename:"+filename+"\n\t" +
                 "FileLine:"+token.getLine()+"\n\t" +

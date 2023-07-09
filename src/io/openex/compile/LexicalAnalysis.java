@@ -10,18 +10,7 @@ public class LexicalAnalysis {
     int file_line, index;
     Character buf;
     String file_name;boolean isl = false;
-    public static final int INTEGER = 0,
-            DOUBLE = 1,
-            SEM = 2,
-            STRING = 3,
-            KEY = 4,
-            NAME = 5,
-            TEXT = 6,
-            LP = 7,
-            LR = 8,
-            LINE = 9,
-            END = 10,
-            EXP = 11;
+
 
     public LexicalAnalysis(ArrayList<String> data, String file_name) {
         StringBuilder sb = new StringBuilder();
@@ -83,7 +72,7 @@ public class LexicalAnalysis {
         } while (isSpace(c));
         if (isSEM(c)) {
             sb.append((char) c);
-            return new Token(SEM, sb.toString(), file_line);
+            return new Token(Token.SEM, sb.toString(), file_line);
         } else if (isNum(c)) {
             boolean isdouble = false;
             do {
@@ -97,13 +86,13 @@ public class LexicalAnalysis {
                     c = getChar();
                 } while (isKey(c) || isNum(c));
                 buf = (char) c;
-                return new Token(NAME, sb.toString(), file_line);
+                return new Token(Token.NAME, sb.toString(), file_line);
             }else if(c=='-'){
                 isl = true;
             }
             buf = (char) c;
-            if (isdouble) return new Token(DOUBLE, sb.toString(), file_line);
-            else return new Token(INTEGER, sb.toString(), file_line);
+            if (isdouble) return new Token(Token.DOUBLE, sb.toString(), file_line);
+            else return new Token(Token.INTEGER, sb.toString(), file_line);
         } else if (isKey(c)) {
             do {
                 sb.append((char) c);
@@ -111,8 +100,8 @@ public class LexicalAnalysis {
                 if (isSEM(c)) break;
             } while (isKey(c) || isNum(c));
             buf = (char) c;
-            if (Main.isKey(sb.toString())) return new Token(KEY, sb.toString(), file_line);
-            return new Token(NAME, sb.toString(), file_line);
+            if (Main.isKey(sb.toString())) return new Token(Token.KEY, sb.toString(), file_line);
+            return new Token(Token.NAME, sb.toString(), file_line);
         } else if (c == '/') {
             sb.append((char) c);
             c = getChar();
@@ -126,14 +115,14 @@ public class LexicalAnalysis {
                     sb.append((char) c);
                 } while (c != '/');
                 sb.deleteCharAt(0).deleteCharAt(sb.length() - 1).deleteCharAt(sb.length() - 1);
-                return new Token(TEXT, sb.toString(), file_line);
-            } else return new Token(SEM, "/", file_line);
-        } else if (c == '*') return new Token(SEM, "*", file_line);
+                return new Token(Token.TEXT, sb.toString(), file_line);
+            } else return new Token(Token.SEM, "/", file_line);
+        } else if (c == '*') return new Token(Token.SEM, "*", file_line);
         else if (c == '"') {
             do {
                 c = getChar();
                 if (c == '\n')
-                    throw new CompileException("找不到字符串冒号收尾符,请检查是否有冒号收尾符或用'+'连接不同行内的字符串", new Token(STRING, sb.toString(), file_line), file_name);
+                    throw new CompileException("'\"' expected.", new Token(Token.STRING, sb.toString(), file_line), file_name);
                 if (c == '\\') {
                     c = getChar();
                     if (c == 'n') {
@@ -145,68 +134,68 @@ public class LexicalAnalysis {
                     } else if (c == '"') {
                         sb.append("\"");
                     } else
-                        throw new CompileException("未知的转义字符", new Token(STRING, sb.toString(), file_line), file_name);
+                        throw new CompileException("Illegal escape character in string literal.", new Token(Token.STRING, sb.toString(), file_line), file_name);
                     continue;
                 }
                 sb.append((char) c);
             } while (c != '"');
             sb.deleteCharAt(sb.indexOf("\""));
-            return new Token(STRING, sb.toString(), file_line);
+            return new Token(Token.STRING, sb.toString(), file_line);
         } else if (c == '=') {
             sb.append((char) c);
             c = getChar();
             if (c == '=' || c == '!') {
                 sb.append((char) c);
-                return new Token(SEM, sb.toString(), file_line);
+                return new Token(Token.SEM, sb.toString(), file_line);
             }
             buf = (char) c;
-            return new Token(SEM, sb.toString(), file_line);
+            return new Token(Token.SEM, sb.toString(), file_line);
         } else if (c == '>' || c == '<') {
             sb.append((char) c);
             c = getChar();
             if (c == '=') {
                 sb.append((char) c);
-                return new Token(SEM, sb.toString(), file_line);
+                return new Token(Token.SEM, sb.toString(), file_line);
             }
             buf = (char) c;
-            return new Token(SEM, sb.toString(), file_line);
+            return new Token(Token.SEM, sb.toString(), file_line);
         } else if (c == '+') {
             sb.append((char) c);
             c = getChar();
             if (c == '=') {
                 sb.append((char) c);
-                return new Token(SEM, sb.toString(), file_line);
+                return new Token(Token.SEM, sb.toString(), file_line);
             }
             buf = (char) c;
-            return new Token(SEM, sb.toString(), file_line);
+            return new Token(Token.SEM, sb.toString(), file_line);
         } else if (c == '-') {
             sb.append((char) c);
 
             if(isl){
                 isl = false;
-                return new Token(SEM, sb.toString(), file_line);
+                return new Token(Token.SEM, sb.toString(), file_line);
             }
 
             c = getChar();
             if (c == '=') {
                 sb.append((char) c);
-                return new Token(SEM, sb.toString(), file_line);
+                return new Token(Token.SEM, sb.toString(), file_line);
             }else if (isNum(c)) {
                 sb.append((char) c);
-                return new Token(INTEGER, sb.toString(), file_line);
+                return new Token(Token.INTEGER, sb.toString(), file_line);
             }
             buf = (char) c;
-            return new Token(SEM, sb.toString(), file_line);
+            return new Token(Token.SEM, sb.toString(), file_line);
         } else if (isLP(c)) {
             sb.append((char) c);
-            return new Token(LP, sb.toString(), file_line);
+            return new Token(Token.LP, sb.toString(), file_line);
         } else if (isLR(c)) {
             sb.append((char) c);
-            return new Token(LR, sb.toString(), file_line);
-        } else if (c == ';') return new Token(END, "" + ((char) c), file_line);
+            return new Token(Token.LR, sb.toString(), file_line);
+        } else if (c == ';') return new Token(Token.END, "" + ((char) c), file_line);
         else if (c == '\n') {
             file_line += 1;
-            return new Token(LINE, "", file_line);
+            return new Token(Token.LINE, "", file_line);
         } else {
             throw new CompileException("Unknown lex in file " + file_name + "(lines:" + file_line + "): >>" + ((char) c) + "<<", file_name);
         }
@@ -221,36 +210,5 @@ public class LexicalAnalysis {
             return tokens;
         }
         return tokens;
-    }
-
-    public static class Token {
-        int type;
-        String data;
-        int line;
-
-        public Token(){}
-
-        public Token(int type, String data, int line) {
-            this.type = type;
-            this.data = data;
-            this.line = line;
-        }
-
-        public int getLine() {
-            return line;
-        }
-
-        public int getType() {
-            return type;
-        }
-
-        public String getData() {
-            return data;
-        }
-
-        @Override
-        public String toString() {
-            return type + "|" + data;
-        }
     }
 }

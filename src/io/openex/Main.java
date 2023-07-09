@@ -1,12 +1,13 @@
 package io.openex;
 
+import io.openex.util.CommandManager;
 import io.openex.util.ScriptOutputStream;
 
 import java.util.HashSet;
 
 public class Main {
-    public static final String compile_version = "OpenEX_ScriptCompile_AbstractSyntaxTree_v0.2.1";
-    public static final String runtime_version = "OpenEX_ScriptRuntime_AbstractSyntaxTree_v0.2.0";
+    public static final String compile_version = "OpenEX_ScriptCompile_AbstractSyntaxTree_v0.2.4";
+    public static final String runtime_version = "OpenEX_ScriptRuntime_AbstractSyntaxTree_v0.2.4";
     static ScriptOutputStream output = new ScriptOutputStream();
     static HashSet<String> s = new HashSet<>();
     static {
